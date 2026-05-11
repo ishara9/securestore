@@ -6,6 +6,8 @@ import com.example.store.exceptions.OrderNotFoundException;
 import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +21,16 @@ public class OrderController {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
+    @Cacheable(
+            value = "orders",
+            key = "'all-orders'"
+    )
     @GetMapping
     public List<OrderDTO> getAllOrders() {
         return orderMapper.ordersToOrderDTOs(orderRepository.findAll());
     }
 
+    @CacheEvict(value = "orders", allEntries = true)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDTO createOrder(@RequestBody Order order) {
