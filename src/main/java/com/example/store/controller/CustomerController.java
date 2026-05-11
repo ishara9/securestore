@@ -5,9 +5,7 @@ import com.example.store.dto.CustomerDTO;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.repository.CustomerRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +20,8 @@ public class CustomerController {
     private final CustomerMapper customerMapper;
 
     @GetMapping
-    public List<CustomerDTO> getAllCustomers() {
-        return customerMapper.customersToCustomerDTOs(customerRepository.findAll());
+    public List<CustomerDTO> getAllCustomers(@RequestParam(name = "name", required = false) String name) {
+        return customerMapper.customersToCustomerDTOs(customerRepository.findByNameContainingIgnoreCase(name != null ? name : ""));
     }
 
     @PostMapping
