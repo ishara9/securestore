@@ -1,10 +1,9 @@
 package com.example.store.controller;
 
-import com.example.store.entity.Customer;
-import com.example.store.entity.Order;
-import com.example.store.mapper.CustomerMapper;
-import com.example.store.repository.CustomerRepository;
-import com.example.store.repository.OrderRepository;
+import com.example.store.dto.OrderDTO;
+import com.example.store.dto.OrderCustomerDTO;
+import com.example.store.dto.PageResponse;
+import com.example.store.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(OrderController.class)
-@ComponentScan(basePackageClasses = CustomerMapper.class)
-@RequiredArgsConstructor
 class OrderControllerTest {
 
     @Autowired
@@ -39,46 +36,46 @@ class OrderControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
-    @MockitoBean
-    private CustomerRepository customerRepository;
+    private OrderDTO orderDto;
 
-    private Order order;
-    private Customer customer;
+    private OrderCustomerDTO orderCustomerDto;
 
     @BeforeEach
     void setUp() {
-        customer = new Customer();
-        customer.setName("John Doe");
-        customer.setId(1L);
+        orderCustomerDto = new OrderCustomerDTO();
+        orderCustomerDto.setId(1L);
+        orderCustomerDto.setName("John Doe");
 
-        order = new Order();
-        order.setDescription("Test Order");
-        order.setId(1L);
-        order.setCustomer(customer);
+        orderDto = new OrderDTO();
+        orderDto.setId(1L);
+        orderDto.setDescription("Test Order");
+        orderDto.setCustomer(orderCustomerDto);
     }
 
     @Test
     void testCreateOrder() throws Exception {
 
-        when(orderRepository.save(order)).thenReturn(order);
+        when(orderService.createOrder(any())).thenReturn(orderDto);
+
+        String payload = "{\"description\":\"Test Order\",\"customers\":{\"name\":\"John Doe\"},\"products\":[]}";
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(order)))
+                        .content(payload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"));
     }
 
     @Test
     void testGetOrder() throws Exception {
-        when(orderRepository.findAllWithProducts(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(order)));
+        when(orderService.getAllOrders(any(Pageable.class))).thenReturn(new PageResponse<>(List.of(orderDto), 0, 10, 1L));
 
         mockMvc.perform(get("/order"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..description").value("Test Order"))
-                .andExpect(jsonPath("$..customer.name").value("John Doe"));
+                .andExpect(jsonPath("$.content[0].description").value("Test Order"))
+                .andExpect(jsonPath("$.content[0].customer.name").value("John Doe"));
     }
 
 }

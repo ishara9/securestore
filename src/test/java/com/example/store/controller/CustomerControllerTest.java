@@ -1,9 +1,9 @@
 package com.example.store.controller;
 
 import com.example.store.dto.CreateCustomerRequestDTO;
-import com.example.store.entity.Customer;
+import com.example.store.dto.CustomerDTO;
 import com.example.store.mapper.CustomerMapper;
-import com.example.store.repository.CustomerRepository;
+import com.example.store.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerController.class)
 @ComponentScan(basePackageClasses = CustomerMapper.class)
-class CustomerControllerTests {
+class CustomerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,21 +35,21 @@ class CustomerControllerTests {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
-    private Customer customer;
+    private CustomerDTO customerDto;
 
     @BeforeEach
     void setUp() {
-        customer = new Customer();
-        customer.setName("John Doe");
-        customer.setId(1L);
+        customerDto = new CustomerDTO();
+        customerDto.setId(1L);
+        customerDto.setName("John Doe");
     }
+
 
     @Test
     void testCreateCustomer() throws Exception {
-
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+        when(customerService.createCustomer(any(CreateCustomerRequestDTO.class))).thenReturn(customerDto);
 
         CreateCustomerRequestDTO createCustomerRequestDTO = new CreateCustomerRequestDTO("John Doe");
 
@@ -62,11 +62,20 @@ class CustomerControllerTests {
 
     @Test
     void testGetAllCustomers() throws Exception {
-        when(customerRepository.findByNameContainingIgnoreCase(anyString())).thenReturn(List.of(customer));
+        when(customerService.getAllCustomers(null)).thenReturn(List.of(customerDto));
 
         mockMvc.perform(get("/customer"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..name").value("John Doe"));
-        ;
+                .andExpect(jsonPath("$[0].name").value("John Doe"));
     }
+
+    @Test
+    void testGetAllCustomers_whenNameParamFound_returnName() throws Exception {
+        when(customerService.getAllCustomers(anyString())).thenReturn(List.of(customerDto));
+
+        mockMvc.perform(get("/customer?name=John Doe"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("John Doe"));
+    }
+
 }

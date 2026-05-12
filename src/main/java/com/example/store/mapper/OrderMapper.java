@@ -1,5 +1,6 @@
 package com.example.store.mapper;
 
+import com.example.store.dto.CreateOrderRequestDTO;
 import com.example.store.dto.OrderCustomerDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.PageResponse;
@@ -13,6 +14,8 @@ public interface OrderMapper extends PageMapper<Order, OrderDTO> {
     OrderDTO orderToOrderDTO(Order order);
 
     OrderCustomerDTO orderToOrderCustomerDTO(Customer customer);
+
+    Order orderDTOtoOrder(CreateOrderRequestDTO orderDTO);
 
     default PageResponse<OrderDTO> ordersToOrderDTOsPage(Page<Order> orders) {
         return mapPage(orders, this::orderToOrderDTO);
