@@ -3,6 +3,7 @@ package com.example.store.controller;
 import com.example.store.dto.ProductDTO;
 import com.example.store.dto.CreateProductRequestDTO;
 import com.example.store.dto.PageResponse;
+import com.example.store.exceptions.EntityNotFoundException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,14 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -78,7 +77,7 @@ class ProductControllerTest {
 
     @Test
     void testFindProductByIdNotFound() throws Exception {
-        when(productService.findProductById(999L)).thenThrow(new com.example.store.exceptions.ItemNotFoundException("not found"));
+        when(productService.findProductById(999L)).thenThrow(new EntityNotFoundException("not found"));
 
         mockMvc.perform(get("/products/999"))
                 .andExpect(status().isNotFound())

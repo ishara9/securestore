@@ -3,15 +3,18 @@ package com.example.store.service.impl;
 import com.example.store.dto.CreateProductRequestDTO;
 import com.example.store.dto.PageResponse;
 import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Order;
 import com.example.store.entity.Product;
-import com.example.store.exceptions.ItemNotFoundException;
+import com.example.store.exceptions.EntityNotFoundException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 import com.example.store.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,20 +30,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<ProductDTO> getAllProducts(Pageable pageable) {
-        return productMapper.mapPage(productRepository.findAll(pageable), p -> new ProductDTO(
-                p.getId(),
-                p.getDescription(),
-                p.getOrders().stream()
-                        .map(Order::getId)
-                        .toList()
-        ));
+        Page<Long> productIds = productRepository.findProductIds(pageable);
+
+        List<Product> products = productRepository.findAllWithOrdersByIds(productIds.getContent());
+
+        List<ProductDTO> productDTOs = products
+                .stream().map(productMapper::productToProductDTO)
+                .toList();
+        return new PageResponse<>(productDTOs,pageable.getPageNumber(), pageable.getPageSize(), productIds.getTotalElements());
     }
 
     @Override
     public ProductDTO findProductById(Long id) {
         Product product = productRepository.findById(id).orElseThrow(
-                () -> new ItemNotFoundException(String.format("Product with id %d not found", id)));
-        return new ProductDTO(product.getId(), product.getDescription(), product.getOrders().stream().map(Order::getId).toList());
+                () -> new EntityNotFoundException(String.format("Product with id %d not found", id)));
+        return productMapper.productToProductDTO(product);
     }
 }
