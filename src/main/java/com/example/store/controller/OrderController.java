@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import com.example.store.dto.OrderDTO;
+import com.example.store.dto.PageResponse;
 import com.example.store.entity.Order;
 import com.example.store.exceptions.ItemNotFoundException;
 import com.example.store.mapper.OrderMapper;
@@ -8,13 +9,10 @@ import com.example.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -24,20 +22,20 @@ public class OrderController {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
-    @Cacheable(
-            value = "orders",
-            key = "'all-orders'"
-    )
-    @GetMapping
-    public Page<OrderDTO> getAllOrders(@PageableDefault(page = 0, size = 10)Pageable pageable) {
-        return orderMapper.ordersToOrderDTOsPage(orderRepository.findAllWithProducts(pageable));
-    }
-
     @CacheEvict(value = "orders", allEntries = true)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDTO createOrder(@RequestBody Order order) {
         return orderMapper.orderToOrderDTO(orderRepository.save(order));
+    }
+
+    @GetMapping
+    @Cacheable(
+            value = "orders",
+            key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
+    )
+    public PageResponse<OrderDTO> getAllOrders(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return orderMapper.ordersToOrderDTOsPage(orderRepository.findAllWithProducts(pageable));
     }
 
     @GetMapping("/{id}")
