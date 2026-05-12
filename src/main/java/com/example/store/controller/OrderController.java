@@ -2,12 +2,15 @@ package com.example.store.controller;
 
 import com.example.store.dto.OrderDTO;
 import com.example.store.entity.Order;
-import com.example.store.exceptions.OrderNotFoundException;
+import com.example.store.exceptions.ItemNotFoundException;
 import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +29,8 @@ public class OrderController {
             key = "'all-orders'"
     )
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
-        return orderMapper.ordersToOrderDTOs(orderRepository.findAll());
+    public Page<OrderDTO> getAllOrders(@PageableDefault(page = 0, size = 10)Pageable pageable) {
+        return orderMapper.ordersToOrderDTOsPage(orderRepository.findAllWithProducts(pageable));
     }
 
     @CacheEvict(value = "orders", allEntries = true)
@@ -39,7 +42,7 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public OrderDTO findOrderById(@PathVariable Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(String.format("Order with id %d not found", id)));
+        Order order = orderRepository.findByIdWithProducts(id).orElseThrow(() -> new ItemNotFoundException(String.format("Order with id %d not found", id)));
         return orderMapper.orderToOrderDTO(order);
     }
 }

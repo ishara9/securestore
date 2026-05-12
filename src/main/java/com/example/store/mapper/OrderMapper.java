@@ -4,8 +4,8 @@ import com.example.store.dto.OrderCustomerDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.entity.Customer;
 import com.example.store.entity.Order;
-
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,4 +16,8 @@ public interface OrderMapper {
     List<OrderDTO> ordersToOrderDTOs(List<Order> orders);
 
     OrderCustomerDTO orderToOrderCustomerDTO(Customer customer);
+
+    default Page<OrderDTO> ordersToOrderDTOsPage(Page<Order> orders) {
+        return orders.map(this::orderToOrderDTO);
+    }
 }

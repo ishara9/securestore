@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4-create_product_schema
+      author: ishara9@gmail.com
+      changes:
+        - sqlFile:
+            path: db/changelog/004_create_product_schema.sql

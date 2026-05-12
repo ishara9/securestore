@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 1-schema
+      id: 3-indexes
       author: developer@securitease.com
       changes:
         - sqlFile:
-            path: db/changelog/001_schema.sql
+            path: db/changelog/003_indexes.sql

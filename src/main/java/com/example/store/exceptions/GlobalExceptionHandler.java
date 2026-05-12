@@ -10,9 +10,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OrderNotFoundException.class)
+    @ExceptionHandler(ItemNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleOrderNotFound(OrderNotFoundException ex) {
+    public Map<String, String> handleOrderNotFound(ItemNotFoundException ex) {
         return Map.of(
                 "error",
                 ex.getMessage()
