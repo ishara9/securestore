@@ -5,6 +5,7 @@ import com.example.store.dto.CustomerDTO;
 import com.example.store.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,10 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
+    @Cacheable(
+            value = "customers",
+            key = "'customer-search-' + #name "
+    )
     public List<CustomerDTO> getAllCustomers(@RequestParam(name = "name", required = false) String name) {
         return customerService.getAllCustomers(name);
     }
