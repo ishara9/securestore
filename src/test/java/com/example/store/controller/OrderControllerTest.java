@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.exceptions.EntityNotFoundException;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.OrderCustomerDTO;
 import com.example.store.service.OrderService;
@@ -71,6 +72,25 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].description").value("Test Order"))
             .andExpect(jsonPath("$[0].customer.name").value("John Doe"));
+    }
+
+    @Test
+    void testFindOrderById() throws Exception {
+        when(orderService.findOrderById(1L)).thenReturn(orderDto);
+
+        mockMvc.perform(get("/order/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.description").value("Test Order"));
+    }
+
+    @Test
+    void testFindOrderByIdNotFound() throws Exception {
+        when(orderService.findOrderById(999L)).thenThrow(new EntityNotFoundException("Order with id 999 not found"));
+
+        mockMvc.perform(get("/order/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").exists());
     }
 
 }
