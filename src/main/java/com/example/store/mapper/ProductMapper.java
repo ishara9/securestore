@@ -9,6 +9,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", imports = {Order.class})
 public interface ProductMapper extends PageMapper<Product, ProductDTO> {
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orders", ignore = true)
     Product createProductRequestDTOToProductDTO(CreateProductRequestDTO createProductRequestDTO);
 
     @Mapping(target = "orderIds", expression = "java(product.getOrders().stream().map(Order::getId).toList())")

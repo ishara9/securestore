@@ -2,13 +2,16 @@ package com.example.store.service.impl;
 
 import com.example.store.dto.CreateCustomerRequestDTO;
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.PageResponse;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.repository.CustomerRepository;
 import com.example.store.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -20,7 +23,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerDTO> getAllCustomers(String name) {
-        return customerMapper.customersToCustomerDTOs(customerRepository.findByNameWithOrders(name != null ? name : ""));
+        List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(name != null ? name : "");
+        return customerMapper.customersToCustomerDTOs(customers);
+    }
+
+    @Override
+    public PageResponse<CustomerDTO> getAllCustomers(String name, Pageable pageable) {
+        Page<Long> customerIds = customerRepository.findCustomerIds(name != null ? name : "", pageable);
+        List<Customer> customers = customerRepository.findByIdsWithOrders(customerIds.getContent());
+        List<CustomerDTO> customerDTOS = customerMapper.customersToCustomerDTOs(customers);
+        return new PageResponse<>(customerDTOS, pageable.getPageNumber(), pageable.getPageSize(), customerIds.getTotalElements());
     }
 
     @Override

@@ -2,15 +2,14 @@ package com.example.store.controller;
 
 import com.example.store.dto.CreateOrderRequestDTO;
 import com.example.store.dto.OrderDTO;
-import com.example.store.dto.PageResponse;
 import com.example.store.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -27,12 +26,8 @@ public class OrderController {
     }
 
     @GetMapping
-    @Cacheable(
-            value = "orders",
-            key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
-    )
-    public PageResponse<OrderDTO> getAllOrders(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-        return orderService.getAllOrders(pageable);
+    public List<OrderDTO> getAllOrders() {
+        return orderService.getAllOrders();
     }
 
     @GetMapping("/{id}")

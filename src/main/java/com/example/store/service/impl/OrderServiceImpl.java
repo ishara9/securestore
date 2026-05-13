@@ -65,6 +65,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orderMapper.ordersToOrderDTOs(orders);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public PageResponse<OrderDTO> getAllOrders(Pageable pageable) {
         Page<Order> orderPage = orderRepository.findAll(pageable);
