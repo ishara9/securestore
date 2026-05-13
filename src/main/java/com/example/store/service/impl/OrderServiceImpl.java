@@ -49,6 +49,10 @@ public class OrderServiceImpl implements OrderService {
                 request.products().stream().map(ProductDTO::id).toList()
         );
 
+        if(products.size() != request.products().size()){
+            throw new EntityNotFoundException("One or more products not found");
+        }
+
         Order order = new Order();
         order.setDescription(request.description());
         order.setCustomer(customer);
