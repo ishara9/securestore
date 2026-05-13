@@ -20,7 +20,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerDTO> getAllCustomers(String name) {
-        return customerMapper.customersToCustomerDTOs(customerRepository.findByNameContainingIgnoreCase(name != null ? name : ""));
+        return customerMapper.customersToCustomerDTOs(customerRepository.findByNameWithOrders(name != null ? name : ""));
     }
 
     @Override
