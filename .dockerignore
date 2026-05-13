@@ -1,0 +1,12 @@
+.git
+.github
+.circleci
+.gradle
+.idea
+.vscode
+build
+out
+
+README.md
+LICENSE
+utils

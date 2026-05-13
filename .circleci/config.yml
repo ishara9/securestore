@@ -1,0 +1,72 @@
+version: 2.1
+jobs:
+    test:
+        docker:
+            - image: cimg/openjdk:17.0
+        steps:
+            - checkout
+            - run:
+                name: Make Gradle wrapper executable
+                command: chmod +x ./gradlew
+            - run: 
+                name: Run unit tests
+                command: ./gradlew clean test --no-daemon
+            - save_cache:
+                key: gradle-v1-{{ checksum "build.gradle"}}-{{ checksum "settings.gradle" }}
+                paths:
+                    - ~/.gradle/caches
+                    - ~/.gradle/wrapper
+            - store_test_results:
+                path: build/test-results/test
+            - store_artifacts:
+                path: build/reports/tests/test
+            - store_artifacts:
+                path: build/reports/jacoco/test/html
+    
+    dockerize:
+        docker:
+            - image: cimg/base:stable
+        steps:
+            - checkout
+            - setup_remote_docker:
+                version: docker24
+            - run:
+                name: Build Docker image
+                command: |
+                    if [ -n "${DOCKER_IMAGE}" ]; then
+                        IMAGE_NAME="${DOCKER_IMAGE}"
+                    elif [ -n "${DOCKERHUB_USERNAME}" ]; then
+                        IMAGE_NAME="${DOCKERHUB_USERNAME}/store-main"
+                    else
+                        IMAGE_NAME="store-main"
+                    fi
+
+                    echo "Building image ${IMAGE_NAME}"
+                    docker build -t "${IMAGE_NAME}:${CIRCLE_SHA1}" -t "${IMAGE_NAME}:latest" .
+            - run:
+                name: Push Docker image to Docker Hub
+                command: |
+                    if [ "${CIRCLE_BRANCH}" != "main" ]; then
+                        echo "Not on main branch. Skipping image push"
+                        exit 0
+                    fi
+                    if [ -z "${DOCKERHUB_USERNAME}"] || [ -z "${DOCKERHUB_TOKEN}" ]; then
+                        echo "DOCKERHUB_USERNAME or DOCKERHUB_TOKEN is not set. Skipping image push."
+                        exit 0
+                    fi
+                    echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+                    if [ -n "${DOCKER_IMAGE}" ]; then
+                        IMAGE_NAME="${DOCKER_IMAGE}"
+                    else
+                        IMAGE_NAME="${DOCKERHUB_USERNAME}/store-main"
+                    fi
+                    docker push "${IMAGE_NAME}:${CIRCLE_SHA1}"
+                    docker push "${IMAGE_NAME}:latest"
+
+workflows:
+    test_and_dockerize :
+        jobs:
+            - test
+            - dockerize:
+                requires:
+                    - test    
