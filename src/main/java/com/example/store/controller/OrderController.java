@@ -25,6 +25,10 @@ public class OrderController {
         return orderService.createOrder(orderDTO);
     }
 
+    @Cacheable(
+            value = "orders",
+            key = "'order-search'"
+    )
     @GetMapping
     public List<OrderDTO> getAllOrders() {
         return orderService.getAllOrders();

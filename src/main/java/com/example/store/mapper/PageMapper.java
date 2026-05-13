@@ -12,7 +12,7 @@ public interface PageMapper<T, R> {
                 page.map(mapper).getContent(),
                 page.getNumber(),
                 page.getSize(),
-                page.getTotalPages()
+                page.getTotalElements()
         );
     }
 }

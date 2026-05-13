@@ -22,7 +22,7 @@ public class CustomerControllerV2 {
     @GetMapping
     @Cacheable(
             value = "customers",
-            key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
+            key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort + '-' +#name"
     )
     public PageResponse<CustomerDTO> getAllCustomers(
             @RequestParam(name = "name", required = false) String name,

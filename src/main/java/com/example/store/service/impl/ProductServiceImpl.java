@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductDTO findProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(
+        Product product = productRepository.findByIdWithOrders(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Product with id %d not found", id)));
         return productMapper.productToProductDTO(product);
     }

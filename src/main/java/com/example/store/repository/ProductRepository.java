@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -17,4 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.orders WHERE p.id IN :ids")
     List<Product> findAllWithOrdersByIds(@Param("ids") List<Long> ids);
+
+    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.orders WHERE p.id = :id")
+    Optional<Product> findByIdWithOrders(@Param("id") Long id);
 }
