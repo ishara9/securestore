@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,12 +26,14 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<CustomerDTO> getAllCustomers(String name) {
         List<Customer> customers = customerRepository.findByNameContainingIgnoreCase(name != null ? name : "");
         return customerMapper.customersToCustomerDTOs(customers);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<CustomerDTO> getAllCustomers(String name, Pageable pageable) {
         Page<Long> customerIds = customerRepository.findCustomerIds(name != null ? name : "", pageable);
         List<Customer> customers = customerRepository.findByIdsWithOrders(customerIds.getContent());
@@ -46,6 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public CustomerDTO createCustomer(CreateCustomerRequestDTO customerDTO) {
         Customer customer = customerMapper.createCustomerRequestDTOToCustomer(customerDTO);
         return customerMapper.customerToCustomerDTO(customerRepository.save(customer));

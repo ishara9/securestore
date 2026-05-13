@@ -24,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
 
     @Override
+    @Transactional
     public ProductDTO createProduct(CreateProductRequestDTO createProductRequestDTO) {
         Product product = productMapper.createProductRequestDTOToProductDTO(createProductRequestDTO);
         return productMapper.productToProductDTO(productRepository.save(product));
@@ -43,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductDTO findProductById(Long id) {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Product with id %d not found", id)));

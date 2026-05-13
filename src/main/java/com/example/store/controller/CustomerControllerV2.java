@@ -19,7 +19,6 @@ public class CustomerControllerV2 {
 
     private final CustomerService customerService;
 
-
     @GetMapping
     @Cacheable(
             value = "customers",

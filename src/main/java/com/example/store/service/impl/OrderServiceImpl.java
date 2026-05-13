@@ -67,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDTO> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
         return orderMapper.ordersToOrderDTOs(orders);
@@ -83,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDTO findOrderById(Long id) {
         Order order = orderRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Order with id %d not found", id)));

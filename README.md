@@ -70,3 +70,82 @@ Think carefully about the impact on performance when implementing your changes
 The specifications of the tasks have been left deliberately vague. You will be required to exercise judgement about what to deliver - in a real world environment, you would clarify these points in refinement, but since this is a project to be completed without interaction, feel free to make assumptions - but be prepared to defend them when asked.
 There's no CI pipeline associated with this project, but in reality there would be. Consider the things that you would expect that pipeline to verify before allowing your code to be promoted
 Feel free to refactor the codebase if necessary. Bad choices were deliberately made when creating this project.
+
+---
+
+# Recent Updates
+
+## API Enhancements
+
+The following API endpoints have been extended and modernized:
+
+### Customer API (v2)
+- `GET /v2/customer` - Retrieve all customers (with pagination)
+  - Query parameter: `name` (optional) - Filter customers by name substring
+  - Example: `GET /v2/customer?name=john&page=0&size=10`
+
+### Order API (v2)
+- `GET /v2/order` - Retrieve all orders (with pagination)
+  - Example: `GET /v2/order?page=0&size=10`
+
+### Legacy API (v1)
+- `GET /customer` - Retrieve all customers (legacy endpoint)
+- `POST /customer` - Create a new customer
+- `GET /order` - Retrieve all orders
+- `POST /order` - Create a new order
+- `GET /order/{id}` - Retrieve a specific order by ID
+
+### Product Endpoints
+- `POST /products` - Create a new product
+- `GET /products` - Retrieve all products (with pagination)
+  - Example: `GET /products?page=0&size=10`
+- `GET /products/{id}` - Retrieve a specific product by ID
+- Products include a list of order IDs they are contained in
+
+For full API specifications, refer to the OpenAPI.yaml file.
+
+## Running with Docker Compose
+
+A `docker-compose.yml` file is included for easy local development and testing.
+
+### Prerequisites
+- Docker and Docker Compose installed on your system
+
+### Quick Start
+
+1. Start all services (PostgreSQL and Redis):
+```shell
+docker-compose up -d
+```
+
+2. Build and run the application:
+```shell
+./gradlew bootRun
+```
+
+The application will be available at `http://localhost:8080`
+
+### Services Included
+- **PostgreSQL 16.2** - Database server on port 5433
+  - Default credentials: `admin:admin`
+  - Database name: `store`
+- **Redis 7** - Cache/session store on port 6379
+
+### Useful Docker Compose Commands
+```shell
+# View logs from all services
+docker-compose logs -f
+
+# View logs from a specific service
+docker-compose logs -f postgres
+docker-compose logs -f redis
+
+# Stop all services
+docker-compose down
+
+# Stop services and remove volumes
+docker-compose down -v
+
+# Restart services
+docker-compose restart
+```
