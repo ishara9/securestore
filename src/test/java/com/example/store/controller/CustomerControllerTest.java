@@ -62,7 +62,7 @@ class CustomerControllerTest {
 
     @Test
     void testGetAllCustomers() throws Exception {
-//        when(customerService.getAllCustomers(null)).thenReturn(List.of(customerDto));
+        when(customerService.getAllCustomers(null)).thenReturn(List.of(customerDto));
 
         mockMvc.perform(get("/customer"))
                 .andExpect(status().isOk())
@@ -71,7 +71,7 @@ class CustomerControllerTest {
 
     @Test
     void testGetAllCustomers_whenNameParamFound_returnName() throws Exception {
-//        when(customerService.getAllCustomers(anyString())).thenReturn(List.of(customerDto));
+        when(customerService.getAllCustomers(anyString())).thenReturn(List.of(customerDto));
 
         mockMvc.perform(get("/customer?name=John Doe"))
                 .andExpect(status().isOk())
