@@ -5,6 +5,8 @@ jobs:
             - image: cimg/openjdk:17.0
         steps:
             - checkout
+            - restore_cache:
+                key: gradle-v1-{{ checksum "build.gradle"}}-{{ checksum "settings.gradle" }}
             - run:
                 name: Make Gradle wrapper executable
                 command: chmod +x ./gradlew
