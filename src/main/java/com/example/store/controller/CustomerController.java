@@ -4,6 +4,7 @@ import com.example.store.dto.CreateCustomerRequestDTO;
 import com.example.store.dto.CustomerDTO;
 import com.example.store.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CacheEvict(value = "customers", allEntries = true)
     public CustomerDTO createCustomer(@RequestBody CreateCustomerRequestDTO customerDTO) {
         return customerService.createCustomer(customerDTO);
     }

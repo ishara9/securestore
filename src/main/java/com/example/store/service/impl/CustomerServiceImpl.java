@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,15 @@ public class CustomerServiceImpl implements CustomerService {
     public PageResponse<CustomerDTO> getAllCustomers(String name, Pageable pageable) {
         Page<Long> customerIds = customerRepository.findCustomerIds(name != null ? name : "", pageable);
         List<Customer> customers = customerRepository.findByIdsWithOrders(customerIds.getContent());
-        List<CustomerDTO> customerDTOS = customerMapper.customersToCustomerDTOs(customers);
+
+        Map<Long, Customer> customerMap = customers.stream()
+                .collect(Collectors.toMap(Customer::getId, c -> c));
+
+        List<Customer> collect = customerIds.getContent().stream()
+                .map(customerMap::get)
+                .collect(Collectors.toList());
+
+        List<CustomerDTO> customerDTOS = customerMapper.customersToCustomerDTOs(collect);
         return new PageResponse<>(customerDTOS, pageable.getPageNumber(), pageable.getPageSize(), customerIds.getTotalElements());
     }
 
