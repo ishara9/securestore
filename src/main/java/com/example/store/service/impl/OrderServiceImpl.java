@@ -40,10 +40,10 @@ public class OrderServiceImpl implements OrderService {
                 );
 
         List<Product> products = productRepository.findAllById(
-                request.productsIds()
+                request.productIds()
         );
 
-        if (products.size() != request.productsIds().size()) {
+        if (products.size() != request.productIds().size()) {
             throw new EntityNotFoundException("One or more products not found");
         }
 

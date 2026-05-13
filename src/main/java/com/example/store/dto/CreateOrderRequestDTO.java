@@ -12,6 +12,6 @@ public record CreateOrderRequestDTO(
         @NotNull(message = "customerId must not be null")
         Long customerId,
         @NotEmpty(message = "products must not be empty")
-        List<Long> productsIds
+        List<Long> productIds
 ) {
 }

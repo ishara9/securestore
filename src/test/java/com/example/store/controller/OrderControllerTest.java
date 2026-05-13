@@ -55,7 +55,7 @@ class OrderControllerTest {
 
         when(orderService.createOrder(any())).thenReturn(orderDto);
 
-        String payload = "{\"description\":\"Test Order\",\"customers\":{\"name\":\"John Doe\"},\"products\":[]}";
+        String payload = "{\"description\":\"Test Order\",\"customerId\":20,\"productIds\":[1,2]}";
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)

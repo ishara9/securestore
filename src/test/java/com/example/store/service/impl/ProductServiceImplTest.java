@@ -85,20 +85,20 @@ class ProductServiceImplTest {
         Product product = new Product();
         ProductDTO response = new ProductDTO(1L, "Laptop", List.of());
 
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(productRepository.findByIdWithOrders(1L)).thenReturn(Optional.of(product));
         when(productMapper.productToProductDTO(product)).thenReturn(response);
 
         ProductDTO result = productService.findProductById(1L);
 
         assertSame(response, result);
-        verify(productRepository).findById(1L);
+        verify(productRepository).findByIdWithOrders(1L);
     }
 
     @Test
     void testFindProductById_whenNotFound_throwsException() {
-        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+        when(productRepository.findByIdWithOrders(99L)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> productService.findProductById(99L));
-        verify(productRepository).findById(99L);
+        verify(productRepository).findByIdWithOrders(99L);
     }
 }
