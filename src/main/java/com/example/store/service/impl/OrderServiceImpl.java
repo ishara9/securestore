@@ -3,7 +3,6 @@ package com.example.store.service.impl;
 import com.example.store.dto.CreateOrderRequestDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.PageResponse;
-import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Customer;
 import com.example.store.entity.Order;
 import com.example.store.entity.Product;
@@ -34,17 +33,17 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO createOrder(CreateOrderRequestDTO request) {
 
-        Long customerId = request.customer().getId();
+        Long customerId = request.customerId();
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() ->
                         new EntityNotFoundException(String.format("Customer with id: %d not found", customerId))
                 );
 
         List<Product> products = productRepository.findAllById(
-                request.products().stream().map(ProductDTO::id).toList()
+                request.productsIds()
         );
 
-        if(products.size() != request.products().size()){
+        if (products.size() != request.productsIds().size()) {
             throw new EntityNotFoundException("One or more products not found");
         }
 

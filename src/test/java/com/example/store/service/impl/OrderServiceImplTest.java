@@ -1,10 +1,8 @@
 package com.example.store.service.impl;
 
 import com.example.store.dto.CreateOrderRequestDTO;
-import com.example.store.dto.CustomerDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.PageResponse;
-import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Customer;
 import com.example.store.entity.Order;
 import com.example.store.entity.Product;
@@ -55,8 +53,8 @@ class OrderServiceImplTest {
     void testCreateOrder_success() {
         CreateOrderRequestDTO request = new CreateOrderRequestDTO(
                 "new order",
-                customerDTO(1L),
-                List.of(new ProductDTO(10L, "P1", List.of()), new ProductDTO(20L, "P2", List.of()))
+                1L,
+                List.of(10L, 20L)
         );
         Customer customer = new Customer();
         customer.setId(1L);
@@ -90,8 +88,8 @@ class OrderServiceImplTest {
     void testCreateOrder_whenCustomerNotFound_throwsException() {
         CreateOrderRequestDTO request = new CreateOrderRequestDTO(
                 "new order",
-                customerDTO(1L),
-                List.of(new ProductDTO(10L, "P1", List.of()))
+                1L,
+                List.of(10L)
         );
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -103,8 +101,8 @@ class OrderServiceImplTest {
     void testCreateOrder_whenProductsNotFound_throwsException() {
         CreateOrderRequestDTO request = new CreateOrderRequestDTO(
                 "new order",
-                customerDTO(1L),
-                List.of(new ProductDTO(10L, "P1", List.of()), new ProductDTO(20L, "P2", List.of()))
+                1L,
+                List.of(10L, 20L)
         );
         Customer customer = new Customer();
         customer.setId(1L);
@@ -175,9 +173,4 @@ class OrderServiceImplTest {
         verify(orderRepository).findByIdWithDetails(55L);
     }
 
-    private CustomerDTO customerDTO(Long id) {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(id);
-        return customerDTO;
-    }
 }
