@@ -1,4 +1,9 @@
 package com.example.store.dto;
 
-public record CreateProductRequestDTO(String description) {
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateProductRequestDTO(
+        @NotBlank(message = "product description must not be blank")
+        String description
+) {
 }

@@ -3,6 +3,8 @@ package com.example.store.controller;
 import com.example.store.dto.CreateCustomerRequestDTO;
 import com.example.store.dto.CustomerDTO;
 import com.example.store.service.CustomerService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,7 +32,7 @@ public class CustomerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @CacheEvict(value = "customers", allEntries = true)
-    public CustomerDTO createCustomer(@RequestBody CreateCustomerRequestDTO customerDTO) {
+    public CustomerDTO createCustomer(@Valid @RequestBody CreateCustomerRequestDTO customerDTO) {
         return customerService.createCustomer(customerDTO);
     }
 }

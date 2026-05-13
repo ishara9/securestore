@@ -4,6 +4,7 @@ import com.example.store.dto.CreateProductRequestDTO;
 import com.example.store.dto.PageResponse;
 import com.example.store.dto.ProductDTO;
 import com.example.store.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +23,7 @@ public class ProductController {
     @PostMapping
     @CacheEvict(value = "products", allEntries = true)
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDTO createProduct(@RequestBody CreateProductRequestDTO createProductRequestDTO) {
+    public ProductDTO createProduct(@Valid @RequestBody CreateProductRequestDTO createProductRequestDTO) {
         return productService.createProduct(createProductRequestDTO);
     }
 

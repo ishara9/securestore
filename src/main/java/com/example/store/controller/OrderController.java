@@ -3,6 +3,7 @@ package com.example.store.controller;
 import com.example.store.dto.CreateOrderRequestDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,7 +22,7 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @CacheEvict(value = "orders", allEntries = true)
-    public OrderDTO createOrder(@RequestBody CreateOrderRequestDTO orderDTO) {
+    public OrderDTO createOrder(@Valid @RequestBody CreateOrderRequestDTO orderDTO) {
         return orderService.createOrder(orderDTO);
     }
 
