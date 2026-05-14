@@ -44,13 +44,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  format: int64
-                descriptioon:
-                  type: string
+              $ref: '#/components/schemas/CreateOrderRequest'
   /customer:
     get:
       summary: Get Customers
@@ -80,13 +74,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  format: int64
-                name:
-                  type: string
+              $ref: '#/components/schemas/CreateCustomerRequest'
   /products:
     get:
       summary: Get Products
@@ -98,17 +86,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  description:
-                    type: string
-                  orders:
-                    type: array
-                    items:
-                      type: integer
-                      format: int64
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
       operationId: getProducts
       description: Get all products
     post:
@@ -124,15 +104,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  format: int64
-                description:
-                  type: string
-                  x-stoplight:
-                    id: jbh0jzkonppv8
+              $ref: '#/components/schemas/CreateProductRequest'
 components:
   schemas:
     Order:
@@ -145,13 +117,20 @@ components:
         description:
           type: string
         customer:
-          type: object
-          properties:
-            id:
-              type: integer
-              format: int64
-            description:
-              type: string
+          $ref: '#/components/schemas/OrderCustomer'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    OrderCustomer:
+      title: OrderCustomer
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
     Customer:
       title: Customer
       type: object
@@ -164,15 +143,64 @@ components:
         orders:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: integer
-                format: int64
-              description:
-                type: string
-                x-stoplight:
-                  id: mq08x82g95zl9
+            $ref: '#/components/schemas/CustomerOrder'
+    CustomerOrder:
+      title: CustomerOrder
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        description:
+          type: string
+    Product:
+      title: Product
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        description:
+          type: string
+        orderIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CreateOrderRequest:
+      title: CreateOrderRequest
+      type: object
+      required:
+        - description
+        - customerId
+        - productIds
+      properties:
+        description:
+          type: string
+        customerId:
+          type: integer
+          format: int64
+        productIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CreateCustomerRequest:
+      title: CreateCustomerRequest
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    CreateProductRequest:
+      title: CreateProductRequest
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
 tags:
   - name: store
     description: store operations
